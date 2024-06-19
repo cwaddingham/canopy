@@ -7,19 +7,59 @@ param containerRegistryName string
 param containerAppsEnvironmentName string
 param applicationInsightsName string
 param exists bool
+
 @secure()
 param appDefinition object
 
+@secure()
+@description('The API key for Pinecone. Used to authenticate to Pinecone services to create indexes and to insert, delete and search data. You can access your API key from the "API Keys" section in the sidebar of your dashboard')
+param pineconeApiKey string
+@secure()
+@description('API key for OpenAI. Used to authenticate to OpenAI services for embedding and chat API. You can find your OpenAI API key in https://platform.openai.com/account/api-keys. You might need to login or register to OpenAI services')
+param openAiKey string
+@description('Name of the Pinecone index Canopy will underlying work with. You can choose any name as long as it follows Pinecone restrictions')
+param indexName string
+
+// Generate secrets and env from appDefinition
 var appSettingsArray = filter(array(appDefinition.settings), i => i.name != '')
-var secrets = map(filter(appSettingsArray, i => i.?secret != null), i => {
+var generatedSecrets = map(filter(appSettingsArray, i => i.?secret != null), i => {
   name: i.name
   value: i.value
   secretRef: i.?secretRef ?? take(replace(replace(toLower(i.name), '_', '-'), '.', '-'), 32)
 })
-var env = map(filter(appSettingsArray, i => i.?secret == null), i => {
+var generatedEnv = map(filter(appSettingsArray, i => i.?secret == null), i => {
   name: i.name
   value: i.value
 })
+
+// Add mandatory settings to secrets and env
+var secrets = union(generatedSecrets, [
+  {
+    name: 'pinecone-api-key'
+    value: pineconeApiKey
+    secretRef: 'pinecone-api-key'
+  }
+  {
+    name: 'open-ai-key'
+    value: openAiKey
+    secretRef: 'open-ai-key'
+  }
+])
+
+var env = union(generatedEnv, [
+  {
+    name: 'PINECONE_API_KEY'
+    secretRef: 'pinecone-api-key'
+  }
+  {
+    name: 'OPENAI_API_KEY'
+    secretRef: 'open-ai-key'
+  }
+  {
+    name: 'INDEX_NAME'
+    value: indexName
+  }
+])
 
 resource identity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
   name: identityName

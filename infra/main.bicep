@@ -10,8 +10,6 @@ param environmentName string
 param location string
 
 param pineconeCanopyExists bool
-@secure()
-param pineconeCanopyDefinition object
 
 @description('Id of the user or app to assign application roles')
 param principalId string
@@ -27,6 +25,25 @@ var tags = {
 
 var abbrs = loadJsonContent('./abbreviations.json')
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
+
+
+// **** Pinecone mandatory parameters, api-key, openai-key and indexName *****
+@secure()
+@description('The API key for Pinecone. Used to authenticate to Pinecone services to create indexes and to insert, delete and search data. You can access your API key from the "API Keys" section in the sidebar of your dashboard')
+param pineconeApiKey string
+@secure()
+@description('API key for OpenAI. Used to authenticate to OpenAI services for embedding and chat API. You can find your OpenAI API key in https://platform.openai.com/account/api-keys. You might need to login or register to OpenAI services')
+param openAiKey string
+@description('Name of the Pinecone index Canopy will underlying work with. You can choose any name as long as it follows Pinecone restrictions')
+// providing a default index name based on the azd env name, subscription and location
+// Allows customers to input less values and assumes the index is not created yet.
+// Remove the default value if you want to force the user to input the index name.
+param indexName string = 'canopy-index-${toLower(uniqueString(subscription().id, environmentName, location))}'
+
+// **** Pinecone optional parameters, api-key, openai-key and indexName *****
+@secure()
+@description('Used for optional environment variables. See the read me for the list of environment variables that can be set. Use main.parameters.json to set each evnironment variable')
+param pineconeCanopyDefinition object
 
 resource rg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
   name: 'rg-${environmentName}'
@@ -101,6 +118,9 @@ module pineconeCanopy './app/pinecone-canopy.bicep' = {
     containerRegistryName: registry.outputs.name
     exists: pineconeCanopyExists
     appDefinition: pineconeCanopyDefinition
+    pineconeApiKey: pineconeApiKey
+    openAiKey: openAiKey
+    indexName: indexName
   }
   scope: rg
 }
