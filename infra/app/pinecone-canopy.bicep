@@ -48,14 +48,6 @@ var secrets = union(generatedSecrets, [
 
 var env = union(generatedEnv, [
   {
-    name: 'PINECONE_API_KEY'
-    secretRef: 'pinecone-api-key'
-  }
-  {
-    name: 'OPENAI_API_KEY'
-    secretRef: 'open-ai-key'
-  }
-  {
     name: 'INDEX_NAME'
     value: indexName
   }
