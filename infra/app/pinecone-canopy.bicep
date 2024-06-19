@@ -35,12 +35,12 @@ var generatedEnv = map(filter(appSettingsArray, i => i.?secret == null), i => {
 // Add mandatory settings to secrets and env
 var secrets = union(generatedSecrets, [
   {
-    name: 'pinecone-api-key'
+    name: 'PINECONE_API_KEY'
     value: pineconeApiKey
     secretRef: 'pinecone-api-key'
   }
   {
-    name: 'open-ai-key'
+    name: 'OPENAI_API_KEY'
     value: openAiKey
     secretRef: 'open-ai-key'
   }
