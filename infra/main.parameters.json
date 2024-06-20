@@ -32,6 +32,15 @@
       },
       "principalId": {
         "value": "${AZURE_PRINCIPAL_ID}"
+      },
+      "pineconeApiKey": {
+        "value": "${PINECONE_API_KEY}"
+      },
+      "openAiKey": {
+        "value": "${OPENAI_API_KEY}"
+      },
+      "indexName": {
+        "value": "${INDEX_NAME}"
       }
     }
 }
