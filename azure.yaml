@@ -2,7 +2,7 @@
 
 name: pinecone-canopy
 metadata:
-    template: azd-init@1.9.3
+    template: pinecone-canopy
 services:
     pinecone-canopy:
         project: .
