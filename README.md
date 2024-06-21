@@ -244,6 +244,12 @@ This will open a similar chat interface window, but will show both the RAG and n
 ## Contributing
 Thank you for considering contributing to Canopy! Please see our [contributing guidelines](./CONTRIBUTING.md) for more information.
 
+## Deploy to azure
+
+- add notes about how to install azd.
+- Mention how azd will prompt for mandatory parameters if the values are not set as system environment variables.
+- provide steps for how to run `azd up` 
+
 ## Advanced usage
 
 ### Migrating an existing OpenAI application to **Canopy**
